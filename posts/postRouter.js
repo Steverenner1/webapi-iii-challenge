@@ -1,13 +1,13 @@
 const express = require("express");
 
-const db = require("../data/dbConfig.js");
 const db = require("./postDb.js");
 
 const router = express.Router();
 
+router.use(express.json());
+
 router.get('/', (req, res) => {
-    const id = req.params.id;
-        db.getById(id)
+        db.get()
             .then(post => {
                 res.status(200).json(post);
             })

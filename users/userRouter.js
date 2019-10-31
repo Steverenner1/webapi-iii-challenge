@@ -2,7 +2,6 @@ const express = require("express");
 
 const router = express.Router();
 
-const db = require("../data/dbConfig.js");
 const db = require("./userDb.js");
 const Posts = require("../posts/postDb.js");
 
@@ -50,7 +49,10 @@ router.get('/', validateUser, (req, res) => {
 router.get('/:id', validateUserId, (req, res) => {
     const id = req.params.id;
     db.getById(id)
-        .then(user => {
+        .then(posts => {
+            res.status(200).json(posts);
+        })
+        .catch(err => {
             console.log(err);
             res.status(500).json({ error: "Can't find the selected ID" })
         });
@@ -117,22 +119,37 @@ function validateUserId(req, res, next) {
 };
 
 function validateUser(req, res, next) {
-    const users = req.body;
-    if (!users) {
-        res.status(500).json({ error: "Cannot find name" });
+    const name = req.body.name;
+    if (!req.body) {
+        res.status(400).json({ error: "Cannot find name" });
+    } else if(!name) {
+        res.status(400).json({ error: "Missing name" })
     } else {
         next();
     }
 };
 
 function validatePost(req, res, next) {
-    const { id: user_id } = req.params;
-    const { text } = req.body;
-    if (!req.body) {
-        res.status(400).json({ error: "Post does not meet qualifications" });
+    const {text} = req.body
+    if (req.body){
+        text
+        ? next()
+        : res.status(400).json({message: 'missing required text field'})
     } else {
-        next();
+        res.status(400).json({message: 'missing post data'})
     }
+
 };
+
+// function validatePost(req, res, next) {
+    
+//     const { text } = req.body;
+//     if (req.body) {
+//         text
+//         res.status(400).json({ error: "Post does not meet qualifications" });
+//     } else {
+//         next();
+//     }
+// };
 
 module.exports = router;

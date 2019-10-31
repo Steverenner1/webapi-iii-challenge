@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require("helmet");
 
 const server = express();
 
@@ -11,6 +12,7 @@ server.get('/', (req, res) => {
 const userRouter = require("./users/userRouter.js");
 const postRouter = require("./posts/postRouter.js");
 
+server.use(helmet());
 server.use(express.json());
 server.use("/users", userRouter);
 server.use("/posts", postRouter);
